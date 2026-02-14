@@ -406,31 +406,31 @@ end
 
 
 
-function timeLoop() -- Prints Time
+-- function timeLoop() -- Prints Time
  
  
-    while true do
-        while curr_state > 0 do
-            cur_pos1, cur_pos2 = term.getCursorPos()
-            cur_bCol = term.getBackgroundColor()
-            cur_tCol = term.getTextColor()
-            cur_time = textutils.formatTime(os.time("local"))
-            time_str_len_offset = math.floor(string.len(cur_time)) / 2 - 1
+--     while true do
+--         while curr_state > 0 do
+--             cur_pos1, cur_pos2 = term.getCursorPos()
+--             cur_bCol = term.getBackgroundColor()
+--             cur_tCol = term.getTextColor()
+--             cur_time = textutils.formatTime(os.time("local"))
+--             time_str_len_offset = math.floor(string.len(cur_time)) / 2 - 1
         
-            pos((x / 2) - time_str_len_offset,2)
-            bCol(colors.lightGray)
-            tCol(colors.black)
-            write(cur_time)
+--             pos((x / 2) - time_str_len_offset,2)
+--             bCol(colors.lightGray)
+--             tCol(colors.black)
+--             write(cur_time)
         
-            pos(cur_pos1, cur_pos2) 
-            bCol(cur_bCol)
-            tCol(cur_tCol)
+--             pos(cur_pos1, cur_pos2) 
+--             bCol(cur_bCol)
+--             tCol(cur_tCol)
             
-            os.sleep(0.05)
-        end
-        os.sleep(0.05)
-    end
-end
+--             os.sleep(0.05)
+--         end
+--         os.sleep(0.05)
+--     end
+-- end
  
  
  
