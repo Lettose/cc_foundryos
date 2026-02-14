@@ -248,14 +248,14 @@ function drawUserInfoLoop()
     -- User Info
     bCol(colors.gray)
     tCol(colors.orange)
-    print_str = "Username: "..username
+    print_str = username
     str_len = math.floor(string.len(print_str)/2)-1
     pos(0.5*x-str_len,8)
     write(print_str)
 
     bCol(colors.gray)
     tCol(colors.white)
-    print_str = "Role: "..role
+    print_str = role
     str_len = math.floor(string.len(print_str)/2)-1
     pos(0.5*x-str_len,9)
     write(print_str)
