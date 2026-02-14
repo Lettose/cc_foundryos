@@ -12,8 +12,10 @@ x,y = term.getSize()
  
 ----------------------------------------------
 
-curr_state = 1
+curr_state = 0
 username = ""
+role = ""
+sw_version = "v1.0.0"
  
 rednet.open("top")
 login_val_ip = rednet.lookup("fos_server","fos_host")
@@ -30,18 +32,32 @@ logo = [[
    |_|\___/\_,_|_||_\__,_|_|  \_, |  \___/|___/
                               |__/                        
 ]]
+
+logo_sil = [[
+        #   #  #   #
+       #   #  #   #
+      ||__||_||__||
+     |_/\/\_|_/\/\_|
+     |  __  |  __  |
+     |__||__|__||__|
+]]
  
  
-function login_client(user, pass)
-    rednet.send(login_val_ip,user, pass)
+function login_request(user, pass)
+    local message = {user,pass}
+    rednet.send(login_val_ip,message,"login_request")
  
-    local valid_bool = false
-    local sender_id,message = rednet.receive(nil, 5)  
- 
-    if sender_id == login_val_ip then
-        if message == "true" then
-            valid_bool = true
+    local valid_flag = false
+    local sender_id,message,protocol = rednet.receive(nil, 5)  
+
+    valid_flag = message[1]
+    user_role = message[2]
+
+    if sender_id == login_val_ip and protocol == "login_request" then
+        if valid_flag == "true" then
+            valid_flag = true
             username = user
+            role = user_role
         else
             write("Incorrect Login")
         end
@@ -49,7 +65,25 @@ function login_client(user, pass)
         printError("Couldn't Validate")
     end
  
-    return valid_bool
+    return valid_flag
+end
+
+
+
+function reset_pass(pass)
+    local message = {username,pass}
+    rednet.send(login_val_ip,message,"reset_pass")
+ 
+    local valid_flag = false
+    local sender_id,valid_flag,protocol = rednet.receive(nil, 5)  
+
+    if sender_id == login_val_ip and protocol == "reset_pass" then
+        if valid_flag == "true" then
+            write("Reset Validated")
+        end
+    else
+        printError("Couldn't Reset")
+    end
 end
  
 -----------------------------------------------
@@ -111,7 +145,7 @@ function drawWindowTemplate()
     -- Header Info
     bCol(colors.lightGray)
     tCol(colors.black)
-    print_str = "[Foundry OS]"
+    print_str = "[FOS "..sw_version.."]"
     pos(2,2)
     write(print_str)
 
@@ -140,13 +174,20 @@ function drawHomePage()
 
     -- Welcome Message
     bCol(colors.gray)
-    tCol(colors.orange)
+    tCol(colors.white)
     print_str = "Welcome, "..username.."!"
     str_len = math.floor(string.len(print_str)/2)-1
     pos(0.25*x-str_len,5)
     write(print_str)
 
-    -- System Info Button
+    bCol(colors.gray)
+    tCol(colors.orange)
+    pos(1,8)
+    write(logo_sil)
+
+    line(1,1,1,y,colors.black)
+
+    -- Home Page Buttons
     st_posx = 30
     st_posy = 5
     
@@ -200,6 +241,35 @@ end
 
 function drawUserInfoLoop()
     drawWindowTemplate()
+
+    local st_pos = 0
+    local end_pos = 0
+
+    -- User Info
+    bCol(colors.gray)
+    tCol(colors.orange)
+    print_str = "Username: "..username
+    str_len = math.floor(string.len(print_str)/2)-1
+    pos(0.5*x-str_len,8)
+    write(print_str)
+
+    bCol(colors.gray)
+    tCol(colors.white)
+    print_str = "Role: "..role
+    str_len = math.floor(string.len(print_str)/2)-1
+    pos(0.5*x-str_len,9)
+    write(print_str)
+
+    -- Password Reset Button
+    st_posx = (0.5*x - btn1_width/2) + 1
+    st_posy = 11
+    box(st_posx,st_posy,st_posx+btn1_width,st_posy+btn1_height,colors.red)
+
+    bCol(colors.red)
+    tCol(colors.white)
+    print_str = "Reset Password"
+    pos(x/2-string.len(print_str)/2+1,12)
+    write(print_str)
 end
 
 
@@ -311,6 +381,24 @@ function userInfoLoop()
             elseif mx >= x-6 and mx <= x-4 and my == 2 and button == 1 then  
                 curr_state = 1
                 break
+            elseif mx >= 18 and mx <= 18+btn1_width and my >= 11 and my <= 11+btn1_height and button == 1 then  
+                line(19,12,33,12,colors.black)
+                tCol(colors.white)
+                bCol(colors.black)
+                pos(19,12)
+                pass_in = read()
+                
+                tCol(colors.red)
+                bCol(colors.gray)
+        
+                pos(19,16)
+
+                reset_pass(pass_in)
+                os.sleep(1)
+
+                drawLoginMenu()
+                curr_state = 0 
+                break
             end
         end
     end
@@ -318,7 +406,7 @@ end
 
 
 
-function timeLoop() -- Prints Time in Top Left
+function timeLoop() -- Prints Time
  
  
     while true do
@@ -364,7 +452,7 @@ function main()
         
             pos(19,18)
  
-            local valid_login = login_client(user_in, pass_in)
+            local valid_login = login_request(user_in, pass_in)
             
             if valid_login == true then
                 curr_state = 1
