@@ -84,10 +84,10 @@ function loginServer()
         local role = nil
         local target_id,message,protocol = rednet.receive()
 
-        local user = message[1]
-        local pass = message[2]
-
         if protocol == "login_request" then
+            local user = message[1]
+            local pass = message[2]
+
             print("Recieved Login Request: ", target_id, user)
             
             for user_ls, pass_ls in pairs(user_passwords) do
@@ -107,6 +107,9 @@ function loginServer()
             rednet.send(target_id,message,"login_request")
         
         elseif protocol == "reset_pass" then
+            local user = message[1]
+            local pass = message[2]
+            
             print("Recieved Reset Password Request: ", target_id, user)
             message = updatePassword(user,pass)
 

@@ -1,0 +1,1 @@
+shell.run("wget run https://raw.githubusercontent.com/Lettose/cc_foundryos/refs/heads/main/server/FoundryOS_Server.lua")
