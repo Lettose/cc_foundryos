@@ -1,3 +1,5 @@
+local cls = term.clear
+
 comp_label = "fos_host"
 protocol = "fos_server"
 
