@@ -117,6 +117,8 @@ function loginServer()
         end
     end
 end
- 
+
+cls()
+
 io_load_credentials()
 loginServer()

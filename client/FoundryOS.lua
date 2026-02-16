@@ -18,7 +18,7 @@ role = ""
 sw_version = "v1.0.0"
  
 rednet.open("top")
-login_val_ip = rednet.lookup("fos_server","fos_host")
+login_val_ip = nil
 
 btn1_width = 16
 btn1_height = 2
@@ -435,6 +435,15 @@ end
  
  
 function main()
+    cls()
+
+    print("Searching for FOS Server..")
+
+    while login_val_ip == nil do
+        login_val_ip = rednet.lookup("fos_server","fos_host")
+        os.sleep(5)
+    end
+
     cls()
     drawLoginMenu()
  
